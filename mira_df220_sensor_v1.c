@@ -1,13 +1,21 @@
 
-#include "sensor_mira_df220.h"
+#include "mira_df220_sensor_v1.h"
 
 #define DBG_ENABLE
 #define DBG_LEVEL DBG_LOG
-#define DBG_SECTION_NAME  "sensor.mira.df220"
+#define DBG_SECTION_NAME "mira.df220.sensor.v1"
 #define DBG_COLOR
 #include <rtdbg.h>
 
 #define GRAVITY_EARTH (9.80665f)
+
+#if defined(RT_VERSION_CHECK)
+    #if (RTTHREAD_VERSION >= RT_VERSION_CHECK(5, 0, 2))
+        #define RT_SIZE_TYPE rt_ssize_t
+    #else
+        #define RT_SIZE_TYPE rt_size_t
+    #endif
+#endif
 
 static void rt_delay_ms(uint32_t period)
 {
@@ -31,7 +39,7 @@ static int8_t rt_i2c_write_reg(void *intf_ptr, uint8_t addr, uint8_t reg, uint8_
 
     if (rt_i2c_transfer(intf_ptr, msgs, 2) != 2)
     {
-        return -RT_ERROR;
+        return RT_ERROR;
     }
 
     return RT_EOK;
@@ -54,7 +62,7 @@ static int8_t rt_i2c_read_reg(void *intf_ptr, uint8_t addr, uint8_t reg, uint8_t
 
     if (rt_i2c_transfer(intf_ptr, msgs, 2) != 2)
     {
-        return -RT_ERROR;
+        return RT_ERROR;
     }
 
     return RT_EOK;
@@ -218,7 +226,7 @@ static rt_err_t _df220_set_power(rt_sensor_t sensor, rt_uint8_t power)
     return rslt;
 }
 
-static rt_size_t df220_fetch_data(struct rt_sensor_device *sensor, void *buf, rt_size_t len)
+static RT_SIZE_TYPE df220_fetch_data(struct rt_sensor_device *sensor, void *buf, rt_size_t len)
 {
     struct df220_dev *_df220_dev = sensor->parent.user_data;
     struct rt_sensor_data *data = buf;
