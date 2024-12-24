@@ -3,6 +3,7 @@
 #ifndef SENSOR_MIRA_DF220_H__
 #define SENSOR_MIRA_DF220_H__
 
+#include "rtthread.h"
 #include "rtdevice.h"
 #include "df220.h"
 
